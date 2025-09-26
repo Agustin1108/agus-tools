@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Tool Website - Dibuat oleh Agus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/lucide-react@0.378.0/dist/lucide-react.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary-color: #2dd4bf; /* Teal */
+            --primary-hover: #5eead4;
+            --background-dark: #0f172a; /* Slate 900 */
+            --background-light: #1e293b; /* Slate 800 */
+            --text-color: #e2e8f0; /* Slate 200 */
+            --border-color: #334155; /* Slate 700 */
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-dark);
+            color: var(--text-color);
+        }
+        .tool-card {
+            background-color: var(--background-light);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease-in-out;
+        }
+        .nav-button {
+            transition: all 0.2s ease-in-out;
+            border-left: 3px solid transparent;
+        }
+        .nav-button:hover, .nav-button.active {
+            background-color: var(--background-light);
+            border-left: 3px solid var(--primary-color);
+            color: white;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+        .form-input, .form-select, .form-textarea {
+            background-color: #334155;
+            border: 1px solid #475569;
+            color: var(--text-color);
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.5);
+        }
+        .result-box {
+            background-color: var(--background-dark);
+            border: 1px dashed var(--border-color);
+            color: var(--primary-color);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--background-light);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-hover);
+        }
+        /* Calculator styles */
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+        }
+        .calc-btn {
+            background-color: #334155;
+            transition: all 0.2s;
+        }
+        .calc-btn:hover {
+            background-color: #475569;
+        }
+        .calc-btn.operator {
+            background-color: #0d9488;
+        }
+        .calc-btn.operator:hover {
+            background-color: #14b8a6;
+        }
+        .calc-btn.equals {
+            background-color: var(--primary-color);
+            grid-column: span 2;
+        }
+         .calc-btn.equals:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .fade-in {
+            animation: fadeInAnimation 0.5s ease-in-out;
+        }
+
+        @keyframes fadeInAnimation {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-64 bg-slate-900 border-r border-slate-800 p-4 md:p-6 flex flex-col shrink-0">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="bg-teal-400 p-2 rounded-lg">
+                    <i data-lucide="wrench" class="text-slate-900"></i>
+                </div>
+                <h1 class="text-xl font-bold text-white">Agus's Tools</h1>
+            </div>
+
+            <nav class="flex-grow">
+                <ul class="space-y-2">
+                    <li><button data-tool="suhu" class="nav-button active w-full text-left flex items-center gap-3 px-4 py-2 rounded-md"><i data-lucide="thermometer" class="w-5 h-5"></i> Konversi Suhu</button></li>
+                    <li><button data-tool="morse" class="nav-button w-full text-left flex items-center gap-3 px-4 py-2 rounded-md"><i data-lucide="radio-tower" class="w-5 h-5"></i> Sandi Morse</button></li>
+                    <li><button data-tool="lorem" class="nav-button w-full text-left flex items-center gap-3 px-4 py-2 rounded-md"><i data-lucide="pilcrow" class="w-5 h-5"></i> Lorem Ipsum</button></li>
+                    <li><button data-tool="umur" class="nav-button w-full text-left flex items-center gap-3 px-4 py-2 rounded-md"><i data-lucide="cake" class="w-5 h-5"></i> Kalkulator Umur</button></li>
+                    <li><button data-tool="kalkulator" class="nav-button w-full text-left flex items-center gap-3 px-4 py-2 rounded-md"><i data-lucide="calculator" class="w-5 h-5"></i> Kalkulator Basic</button></li>
+                    <li><button data-tool="mundur" class="nav-button w-full text-left flex items-center gap-3 px-4 py-2 rounded-md"><i data-lucide="calendar-clock" class="w-5 h-5"></i> Hitung Mundur</button></li>
+                </ul>
+            </nav>
+
+            <div class="mt-8 pt-6 border-t border-slate-800">
+                <p class="text-xs text-slate-400 text-center">Dibuat oleh:</p>
+                <p class="text-sm font-semibold text-slate-200 text-center mt-1">Agus</p>
+                <p class="text-xs text-slate-400 text-center mt-1">Siswa UPT SMKN 3 Sinjai</p>
+                <p class="text-xs text-slate-400 text-center">Manajemen Perkantoran & Layanan Bisnis</p>
+
+                <div class="flex justify-center gap-4 mt-4">
+                    <a href="https://www.instagram.com/agus11082007?igsh=MXducjhpaTU4Z2Y5bg==" target="_blank" class="text-slate-400 hover:text-teal-400 transition-colors"><i data-lucide="instagram"></i></a>
+                    <a href="https://t.me/agsdgreat" target="_blank" class="text-slate-400 hover:text-teal-400 transition-colors"><i data-lucide="send"></i></a>
+                    <a href="https://www.facebook.com/share/17RscPvGud/" target="_blank" class="text-slate-400 hover:text-teal-400 transition-colors"><i data-lucide="facebook"></i></a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-4 sm:p-6 md:p-8 lg:p-10">
+            <div id="tool-container">
+                <!-- Temperature Converter -->
+                <div id="suhu-tool" class="tool-panel fade-in">
+                    <div class="tool-card p-6">
+                        <h2 class="text-2xl font-bold mb-4 text-white">Konversi Suhu</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                            <div>
+                                <label class="block mb-2 text-sm font-medium">Nilai</label>
+                                <input type="number" id="temp-input" class="form-input w-full p-2 rounded-md" placeholder="Contoh: 30">
+                            </div>
+                            <div>
+                                <label class="block mb-2 text-sm font-medium">Dari</label>
+                                <select id="temp-from" class="form-select w-full p-2 rounded-md">
+                                    <option value="C">Celsius (°C)</option>
+                                    <option value="F">Fahrenheit (°F)</option>
+                                    <option value="K">Kelvin (K)</option>
+                                    <option value="R">Reamur (°R)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block mb-2 text-sm font-medium">Ke</label>
+                                <select id="temp-to" class="form-select w-full p-2 rounded-md">
+                                    <option value="C">Celsius (°C)</option>
+                                    <option value="F" selected>Fahrenheit (°F)</option>
+                                    <option value="K">Kelvin (K)</option>
+                                    <option value="R">Reamur (°R)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <button id="temp-convert-btn" class="btn-primary w-full p-3 rounded-md">Konversi</button>
+                        </div>
+                        <div class="mt-6 text-center">
+                            <p class="text-slate-400">Hasil:</p>
+                            <p id="temp-result" class="result-box mt-2 p-4 rounded-md text-2xl font-bold">...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Morse Code Converter -->
+                <div id="morse-tool" class="tool-panel hidden fade-in">
+                    <div class="tool-card p-6">
+                        <h2 class="text-2xl font-bold mb-4 text-white">Konverter Sandi Morse</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block mb-2 text-sm font-medium">Teks</label>
+                                <textarea id="morse-input-text" class="form-textarea w-full h-32 p-2 rounded-md" placeholder="Ketik teks di sini..."></textarea>
+                            </div>
+                            <div>
+                                <label class="block mb-2 text-sm font-medium">Sandi Morse</label>
+                                <textarea id="morse-output-morse" class="form-textarea w-full h-32 p-2 rounded-md" placeholder="...---..."></textarea>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex flex-col sm:flex-row gap-4">
+                            <button id="morse-to-morse-btn" class="btn-primary flex-1 p-3 rounded-md">Teks ke Morse</button>
+                            <button id="morse-to-text-btn" class="btn-primary flex-1 p-3 rounded-md">Morse ke Teks</button>
+                        </div>
+                         <button id="morse-copy-btn" class="mt-4 bg-slate-600 hover:bg-slate-500 w-full p-2 rounded-md text-sm">Salin Hasil Morse</button>
+                    </div>
+                </div>
+
+                <!-- Lorem Ipsum Generator -->
+                <div id="lorem-tool" class="tool-panel hidden fade-in">
+                    <div class="tool-card p-6">
+                        <h2 class="text-2xl font-bold mb-4 text-white">Generator Lorem Ipsum</h2>
+                        <div class="flex items-center gap-4">
+                             <label for="lorem-paragraphs" class="text-sm font-medium">Jumlah Paragraf:</label>
+                            <input type="number" id="lorem-paragraphs" value="3" min="1" max="20" class="form-input w-24 p-2 rounded-md text-center">
+                            <button id="lorem-generate-btn" class="btn-primary flex-1 p-2 rounded-md">Buat</button>
+                        </div>
+                        <div class="mt-6 relative">
+                            <button id="lorem-copy-btn" class="absolute top-2 right-2 bg-slate-600 hover:bg-slate-500 p-2 rounded-md text-xs">Salin</button>
+                            <div id="lorem-result" class="result-box mt-2 p-4 rounded-md h-64 overflow-y-auto space-y-4 text-sm text-slate-300">
+                                Klik "Buat" untuk menghasilkan teks.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Age Calculator -->
+                <div id="umur-tool" class="tool-panel hidden fade-in">
+                     <div class="tool-card p-6 max-w-md mx-auto">
+                        <h2 class="text-2xl font-bold mb-4 text-white text-center">Kalkulator Umur</h2>
+                        <div class="space-y-4">
+                            <div>
+                               <label for="birthdate-input" class="block mb-2 text-sm font-medium">Tanggal Lahir Anda</label>
+                                <input type="date" id="birthdate-input" class="form-input w-full p-2 rounded-md">
+                            </div>
+                            <button id="age-calculate-btn" class="btn-primary w-full p-3 rounded-md">Hitung Umur</button>
+                        </div>
+                        <div id="age-result" class="mt-6 text-center hidden">
+                           <p class="text-slate-400">Umur Anda adalah:</p>
+                           <div class="result-box mt-2 p-4 rounded-md text-lg font-bold">
+                               <span id="age-years"></span> Tahun, 
+                               <span id="age-months"></span> Bulan, 
+                               <span id="age-days"></span> Hari
+                           </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Basic Calculator -->
+                <div id="kalkulator-tool" class="tool-panel hidden fade-in">
+                    <div class="tool-card p-6 max-w-sm mx-auto">
+                        <h2 class="text-2xl font-bold mb-4 text-white text-center">Kalkulator Basic</h2>
+                        <input type="text" id="calc-display" readonly class="form-input w-full p-4 rounded-md text-right text-3xl mb-4">
+                        <div class="calc-grid">
+                            <button class="calc-btn p-4 rounded-md text-xl" onclick="calcClear()">C</button>
+                            <button class="calc-btn p-4 rounded-md text-xl" onclick="calcAppend('/')">/</button>
+                            <button class="calc-btn p-4 rounded-md text-xl" onclick="calcAppend('*')">*</button>
+                            <button class="calc-btn p-4 rounded-md text-xl operator" onclick="calcAppend('-')">-</button>
+                            
+                            <button class="calc-btn p-4 rounded-md text-xl" onclick="calcAppend('7')">7</button>
+                            <button class="calc-btn p-4 rounded-md text-xl" onclick="calcAppend('8')">8</button>
+                            <button class="calc-btn p-4 rounded-md text-xl" onclick="calcAppend('9')">9</button>
+                            <button class="calc-btn p-4 rounded-md text-xl operator" onclick="calcAppend('+')" style="grid-row: span 2;">+</button>
+
+                            <button class="calc-btn p-4 rounded-md text-xl" onclick="calcAppend('4')">4</button>
+                            <button class="calc-btn p-4 rounded-md text-xl" onclick="calcAppend('5')">5</button>
+                            <button class="calc-btn p-4 rounded-md text-xl" onclick="calcAppend('6')">6</button>
+
+                            <button class="calc-btn p-4 rounded-md text-xl" onclick="calcAppend('1')">1</button>
+                            <button class="calc-btn p-4 rounded-md text-xl" onclick="calcAppend('2')">2</button>
+                            <button class="calc-btn p-4 rounded-md text-xl" onclick="calcAppend('3')">3</button>
+                            <button class="calc-btn p-4 rounded-md text-xl equals" onclick="calcCalculate()">=</button>
+
+                            <button class="calc-btn p-4 rounded-md text-xl" onclick="calcAppend('0')" style="grid-column: span 2;">0</button>
+                            <button class="calc-btn p-4 rounded-md text-xl" onclick="calcAppend('.')">.</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Countdown Calculator -->
+                <div id="mundur-tool" class="tool-panel hidden fade-in">
+                     <div class="tool-card p-6 max-w-lg mx-auto">
+                        <h2 class="text-2xl font-bold mb-4 text-white text-center">Penghitung Mundur Hari-H</h2>
+                        <div class="space-y-4">
+                            <div>
+                               <label for="countdown-title" class="block mb-2 text-sm font-medium">Nama Acara</label>
+                                <input type="text" id="countdown-title" class="form-input w-full p-2 rounded-md" placeholder="Contoh: Ulang Tahun Saya">
+                            </div>
+                            <div>
+                               <label for="countdown-date" class="block mb-2 text-sm font-medium">Tanggal Acara</label>
+                                <input type="date" id="countdown-date" class="form-input w-full p-2 rounded-md">
+                            </div>
+                            <button id="countdown-start-btn" class="btn-primary w-full p-3 rounded-md">Mulai Hitung Mundur</button>
+                        </div>
+                        <div id="countdown-result" class="mt-6 text-center hidden">
+                           <h3 id="countdown-result-title" class="text-xl font-semibold mb-2"></h3>
+                           <div class="grid grid-cols-4 gap-2 md:gap-4">
+                               <div>
+                                   <div class="result-box p-3 md:p-4 rounded-md text-2xl font-bold" id="countdown-days">0</div>
+                                   <p class="text-xs mt-1 text-slate-400">Hari</p>
+                               </div>
+                               <div>
+                                   <div class="result-box p-3 md:p-4 rounded-md text-2xl font-bold" id="countdown-hours">0</div>
+                                   <p class="text-xs mt-1 text-slate-400">Jam</p>
+                               </div>
+                               <div>
+                                   <div class="result-box p-3 md:p-4 rounded-md text-2xl font-bold" id="countdown-minutes">0</div>
+                                   <p class="text-xs mt-1 text-slate-400">Menit</p>
+                               </div>
+                               <div>
+                                   <div class="result-box p-3 md:p-4 rounded-md text-2xl font-bold" id="countdown-seconds">0</div>
+                                   <p class="text-xs mt-1 text-slate-400">Detik</p>
+                               </div>
+                           </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+
+            const navButtons = document.querySelectorAll('.nav-button');
+            const toolPanels = document.querySelectorAll('.tool-panel');
+
+            // Navigation logic
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tool = button.dataset.tool;
+
+                    // Update button active state
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    // Show/hide tool panels
+                    toolPanels.forEach(panel => {
+                        if (panel.id === `${tool}-tool`) {
+                            panel.classList.remove('hidden');
+                        } else {
+                            panel.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            // --- Temperature Converter Logic ---
+            const tempInput = document.getElementById('temp-input');
+            const tempFrom = document.getElementById('temp-from');
+            const tempTo = document.getElementById('temp-to');
+            const tempConvertBtn = document.getElementById('temp-convert-btn');
+            const tempResult = document.getElementById('temp-result');
+
+            tempConvertBtn.addEventListener('click', () => {
+                const value = parseFloat(tempInput.value);
+                if (isNaN(value)) {
+                    tempResult.textContent = 'Masukkan angka yang valid';
+                    return;
+                }
+
+                const from = tempFrom.value;
+                const to = tempTo.value;
+                let result = value;
+
+                // First, convert to Celsius as a base unit
+                let valueInC;
+                switch (from) {
+                    case 'C': valueInC = value; break;
+                    case 'F': valueInC = (value - 32) * 5 / 9; break;
+                    case 'K': valueInC = value - 273.15; break;
+                    case 'R': valueInC = value * 5 / 4; break;
+                }
+
+                // Then, convert from Celsius to the target unit
+                switch (to) {
+                    case 'C': result = valueInC; break;
+                    case 'F': result = (valueInC * 9 / 5) + 32; break;
+                    case 'K': result = valueInC + 273.15; break;
+                    case 'R': result = valueInC * 4 / 5; break;
+                }
+
+                tempResult.textContent = `${result.toFixed(2)} °${to}`;
+            });
+
+            // --- Morse Code Logic ---
+            const morseCodeMap = { 'A':'.-', 'B':'-...', 'C':'-.-.', 'D':'-..', 'E':'.', 'F':'..-.', 'G':'--.', 'H':'....', 'I':'..', 'J':'.---', 'K':'-.-', 'L':'.-..', 'M':'--', 'N':'-.', 'O':'---', 'P':'.--.', 'Q':'--.-', 'R':'.-.', 'S':'...', 'T':'-', 'U':'..-', 'V':'...-', 'W':'.--', 'X':'-..-', 'Y':'-.--', 'Z':'--..', '1':'.----', '2':'..---', '3':'...--', '4':'....-', '5':'.....', '6':'-....', '7':'--...', '8':'---..', '9':'----.', '0':'-----', ' ':'/' };
+            const textMap = Object.fromEntries(Object.entries(morseCodeMap).map(([k, v]) => [v, k]));
+            
+            const morseInput = document.getElementById('morse-input-text');
+            const morseOutput = document.getElementById('morse-output-morse');
+            const toMorseBtn = document.getElementById('morse-to-morse-btn');
+            const toTextBtn = document.getElementById('morse-to-text-btn');
+            const morseCopyBtn = document.getElementById('morse-copy-btn');
+
+            toMorseBtn.addEventListener('click', () => {
+                const text = morseInput.value.toUpperCase();
+                morseOutput.value = text.split('').map(char => morseCodeMap[char] || '').join(' ');
+            });
+
+            toTextBtn.addEventListener('click', () => {
+                const morse = morseOutput.value;
+                morseInput.value = morse.split(' ').map(code => textMap[code] || '').join('');
+            });
+            
+            morseCopyBtn.addEventListener('click', () => {
+                morseOutput.select();
+                document.execCommand('copy');
+                morseCopyBtn.textContent = 'Disalin!';
+                setTimeout(() => { morseCopyBtn.textContent = 'Salin Hasil Morse' }, 2000);
+            });
+
+            // --- Lorem Ipsum Logic ---
+            const loremText = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Praesent elementum facilisis leo vel fringilla est ullamcorper. Purus sit amet volutpat consequat mauris nunc congue. Nunc sed velit dignissim sodales ut eu sem integer. Massa ultricies mi quis hendrerit dolor magna eget est. Velit aliquet sagittis id consectetur purus ut. Amet tellus cras adipiscing enim eu turpis egestas pretium. Placerat in egestas erat imperdiet sed euismod nisi. Risus commodo viverra maecenas accumsan lacus vel facilisis. Eget nullam non nisi est sit amet facilisis magna etiam. Sit amet consectetur adipiscing elit duis tristique. Id diam vel quam elementum pulvinar etiam non. Leo vel fringilla est ullamcorper eget nulla facilisi etiam dignissim.";
+            const loremSentences = loremText.split('. ').map(s => s.trim() + '.');
+            
+            const loremParagraphsInput = document.getElementById('lorem-paragraphs');
+            const loremGenerateBtn = document.getElementById('lorem-generate-btn');
+            const loremResultDiv = document.getElementById('lorem-result');
+            const loremCopyBtn = document.getElementById('lorem-copy-btn');
+
+            function generateLorem() {
+                const numParagraphs = parseInt(loremParagraphsInput.value);
+                loremResultDiv.innerHTML = '';
+                for (let i = 0; i < numParagraphs; i++) {
+                    let paragraph = '';
+                    const numSentences = Math.floor(Math.random() * 5) + 4; // 4 to 8 sentences
+                    for (let j = 0; j < numSentences; j++) {
+                        paragraph += loremSentences[Math.floor(Math.random() * loremSentences.length)] + ' ';
+                    }
+                    loremResultDiv.innerHTML += `<p>${paragraph.trim()}</p>`;
+                }
+            }
+            
+            loremGenerateBtn.addEventListener('click', generateLorem);
+            generateLorem(); // Generate on load
+
+            loremCopyBtn.addEventListener('click', () => {
+                const textToCopy = loremResultDiv.innerText;
+                const tempTextArea = document.createElement('textarea');
+                tempTextArea.value = textToCopy;
+                document.body.appendChild(tempTextArea);
+                tempTextArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempTextArea);
+
+                loremCopyBtn.textContent = 'Disalin!';
+                setTimeout(() => { loremCopyBtn.textContent = 'Salin' }, 2000);
+            });
+
+            // --- Age Calculator Logic ---
+            const birthdateInput = document.getElementById('birthdate-input');
+            const ageCalculateBtn = document.getElementById('age-calculate-btn');
+            const ageResultDiv = document.getElementById('age-result');
+            
+            ageCalculateBtn.addEventListener('click', () => {
+                const birthDate = new Date(birthdateInput.value);
+                if (!birthdateInput.value) return;
+
+                const today = new Date();
+
+                let years = today.getFullYear() - birthDate.getFullYear();
+                let months = today.getMonth() - birthDate.getMonth();
+                let days = today.getDate() - birthDate.getDate();
+
+                if (days < 0) {
+                    months--;
+                    const lastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+                    days += lastMonth.getDate();
+                }
+
+                if (months < 0) {
+                    years--;
+                    months += 12;
+                }
+                
+                document.getElementById('age-years').textContent = years;
+                document.getElementById('age-months').textContent = months;
+                document.getElementById('age-days').textContent = days;
+                ageResultDiv.classList.remove('hidden');
+            });
+            
+            // --- Countdown Logic ---
+            const countdownTitleInput = document.getElementById('countdown-title');
+            const countdownDateInput = document.getElementById('countdown-date');
+            const countdownStartBtn = document.getElementById('countdown-start-btn');
+            const countdownResultDiv = document.getElementById('countdown-result');
+            let countdownInterval;
+            
+            countdownStartBtn.addEventListener('click', () => {
+                const targetDate = new Date(countdownDateInput.value);
+                if (!countdownDateInput.value) return;
+                
+                const title = countdownTitleInput.value || "Hitung Mundur";
+                document.getElementById('countdown-result-title').textContent = title;
+
+                clearInterval(countdownInterval);
+
+                countdownInterval = setInterval(() => {
+                    const now = new Date().getTime();
+                    const distance = targetDate.getTime() - now;
+                    
+                    if (distance < 0) {
+                        clearInterval(countdownInterval);
+                        document.getElementById('countdown-result-title').textContent = `${title} (Waktu Habis!)`;
+                        return;
+                    }
+
+                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    document.getElementById('countdown-days').textContent = days;
+                    document.getElementById('countdown-hours').textContent = hours;
+                    document.getElementById('countdown-minutes').textContent = minutes;
+                    document.getElementById('countdown-seconds').textContent = seconds;
+                }, 1000);
+
+                countdownResultDiv.classList.remove('hidden');
+            });
+
+        });
+
+        // --- Basic Calculator Logic (Global functions for onclick) ---
+        const calcDisplay = document.getElementById('calc-display');
+        function calcAppend(value) {
+            calcDisplay.value += value;
+        }
+        function calcClear() {
+            calcDisplay.value = '';
+        }
+        function calcCalculate() {
+            try {
+                // Using eval is generally unsafe, but acceptable for this controlled calculator context.
+                // A safer alternative would be to parse the expression, but that's much more complex.
+                const result = eval(calcDisplay.value.replace(/[^-()\d/*+.]/g, ''));
+                calcDisplay.value = result;
+            } catch (error) {
+                calcDisplay.value = 'Error';
+            }
+        }
+    </script>
+</body>
+</html>
+
